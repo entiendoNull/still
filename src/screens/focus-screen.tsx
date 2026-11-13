@@ -1,6 +1,6 @@
 import { Button, Column, Host, Picker, Text as NativeText } from "@expo/ui";
 import { isAvailable } from "expo-app-intents";
-import { ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import Animated, { useReducedMotion } from "react-native-reanimated";
 
 import { FocusOrbit } from "@/components/focus-orbit";
@@ -80,51 +80,21 @@ export default function FocusScreen() {
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      style={{ flex: 1, backgroundColor: ink }}
-      contentContainerStyle={{
-        paddingHorizontal: 28,
-        paddingTop: 16,
-        paddingBottom: 40,
-        gap: 26,
-        alignItems: "stretch",
-      }}
+      style={styles.screen}
+      contentContainerStyle={styles.content}
     >
-      <View style={{ gap: 8, minHeight: 105 }}>
-        <Text
-          style={{
-            color: lime,
-            fontSize: 11,
-            fontWeight: "700",
-            letterSpacing: 3,
-          }}
-        >
+      <View style={styles.header}>
+        <Text style={styles.eyebrow}>
           LESS NOISE. MORE FOCUS.
         </Text>
 
-        <Text
-          style={{
-            color: cream,
-            fontSize: 30,
-            fontWeight: "500",
-            letterSpacing: -1,
-          }}
-        >
-          {copy.title}
-        </Text>
+        <Text style={styles.title}>{copy.title}</Text>
 
-        <Text style={{ color: muted, fontSize: 16, lineHeight: 23 }}>
-          {copy.subtitle}
-        </Text>
+        <Text style={styles.subtitle}>{copy.subtitle}</Text>
       </View>
 
       <View
-        style={{
-          alignSelf: "center",
-          width: size,
-          height: size,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+        style={[styles.dial, { width: size, height: size }]}
         accessible
         accessibilityLabel={`${copy.accessibilityLabel} ${formatRemaining(left)}`}
       >
@@ -134,59 +104,29 @@ export default function FocusScreen() {
           progress={progress}
         />
 
-        <Text
-          style={{
-            color: muted,
-            fontSize: 11,
-            fontWeight: "600",
-            letterSpacing: 3,
-            marginBottom: 10,
-          }}
-        >
-          {copy.timerLabel}
-        </Text>
+        <Text style={styles.timerLabel}>{copy.timerLabel}</Text>
 
-        <Text
-          selectable
-          style={{
-            color: cream,
-            fontSize: 64,
-            fontWeight: "300",
-            fontVariant: ["tabular-nums"],
-            letterSpacing: -3,
-          }}
-        >
+        <Text selectable style={styles.timer}>
           {formatRemaining(left)}
         </Text>
 
         <Animated.View
-          style={{
-            marginTop: 16,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 7,
-            opacity: active ? 1 : 0.5,
-            transitionProperty: "opacity",
-            transitionDuration: reduced ? 0 : 180,
-          }}
+          style={[
+            styles.encouragement,
+            {
+              opacity: active ? 1 : 0.5,
+              transitionDuration: reduced ? 0 : 180,
+            },
+          ]}
         >
-          <View
-            style={{
-              height: 5,
-              width: 5,
-              borderRadius: 3,
-              backgroundColor: lime,
-            }}
-          />
+          <View style={styles.statusDot}/>
 
-          <Text style={{ color: muted, fontSize: 12 }}>
-            {copy.encouragement}
-          </Text>
+          <Text style={styles.encouragementText}>{copy.encouragement}</Text>
         </Animated.View>
       </View>
 
-      <View style={{ gap: 16 }}>
-        <View style={{ height: 40 }} pointerEvents={active ? "none" : "auto"}>
+      <View style={styles.controls}>
+        <View style={styles.durationPicker} pointerEvents={active ? "none" : "auto"}>
           <Host matchContents colorScheme="dark" seedColor={lime}>
             <Picker
               enabled={!active}
@@ -208,24 +148,19 @@ export default function FocusScreen() {
           matchContents
           colorScheme="dark"
           seedColor={lime}
-          style={{ width: "100%" }}
+          style={styles.actions}
         >
           <Column spacing={10} alignment="center">
             <Button
               testID="primary-action"
-              style={{ width: "100%", height: 54 }}
+              style={styles.primaryButton}
               onPress={onPrimary}
             >
               <NativeText
-                textStyle={{
-                  color: ink,
-                  fontSize: 17,
-                  fontWeight: "600",
-                  textAlign: "center",
-                }}
+                textStyle={styles.primaryButtonText}
                 style={{
+                  ...styles.primaryButtonContent,
                   width: Math.max(180, width - 100),
-                  paddingVertical: 10,
                 }}
               >
                 {copy.action}
@@ -244,38 +179,21 @@ export default function FocusScreen() {
       </View>
 
       {isAvailable() && (
-        <View
-          style={{
-            borderTopWidth: 1,
-            borderColor: "#2B3931",
-            paddingTop: 22,
-            gap: 10,
-          }}
-        >
-          <Text
-            style={{
-              color: lime,
-              fontSize: 11,
-              fontWeight: "700",
-              letterSpacing: 2,
-            }}
-          >
+        <View style={styles.siriSection}>
+          <Text style={styles.siriHeading}>
             JUST ASK SIRI
           </Text>
 
-          <Text
-            selectable
-            style={{ color: cream, fontSize: 20, lineHeight: 28 }}
-          >
+          <Text selectable style={styles.siriPhrase}>
             “Start a focus session in Still”
           </Text>
 
-          <Text style={{ color: muted, fontSize: 13, lineHeight: 20 }}>
+          <Text style={styles.siriDescription}>
             Starts a 25-minute session. You can also choose a duration in
             Shortcuts. An active session won’t be restarted.
           </Text>
 
-          <Text style={{ color: lime, fontSize: 12, minHeight: 16 }}>
+          <Text style={styles.receipt}>
             {receipt ??
               (session?.source === "intent" ? "Started with App Intent" : " ")}
           </Text>
@@ -283,14 +201,142 @@ export default function FocusScreen() {
       )}
 
       {error && (
-        <Text selectable accessibilityRole="alert" style={{ color: "#FFB3A4" }}>
+        <Text selectable accessibilityRole="alert" style={styles.error}>
           Couldn’t handle this action: {error}
         </Text>
       )}
 
-      <Text style={{ color: "#66776D", fontSize: 11, textAlign: "center" }}>
+      <Text style={styles.footer}>
         BUILT WITH EXPO · APP INTENTS
       </Text>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: ink,
+  },
+  content: {
+    paddingHorizontal: 28,
+    paddingTop: 16,
+    paddingBottom: 40,
+    gap: 26,
+    alignItems: "stretch",
+  },
+  header: {
+    gap: 8,
+    minHeight: 105,
+  },
+  eyebrow: {
+    color: lime,
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 3,
+  },
+  title: {
+    color: cream,
+    fontSize: 30,
+    fontWeight: "500",
+    letterSpacing: -1,
+  },
+  subtitle: {
+    color: muted,
+    fontSize: 16,
+    lineHeight: 23,
+  },
+  dial: {
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  timerLabel: {
+    color: muted,
+    fontSize: 11,
+    fontWeight: "600",
+    letterSpacing: 3,
+    marginBottom: 10,
+  },
+  timer: {
+    color: cream,
+    fontSize: 64,
+    fontWeight: "300",
+    fontVariant: ["tabular-nums"],
+    letterSpacing: -3,
+  },
+  encouragement: {
+    marginTop: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    transitionProperty: "opacity",
+  },
+  statusDot: {
+    height: 5,
+    width: 5,
+    borderRadius: 3,
+    backgroundColor: lime,
+  },
+  encouragementText: {
+    color: muted,
+    fontSize: 12,
+  },
+  controls: {
+    gap: 16,
+  },
+  durationPicker: {
+    height: 40,
+  },
+  actions: {
+    width: "100%",
+  },
+  primaryButton: {
+    width: "100%" as const,
+    height: 54,
+  },
+  primaryButtonText: {
+    color: ink,
+    fontSize: 17,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  primaryButtonContent: {
+    paddingVertical: 10,
+  },
+  siriSection: {
+    borderTopWidth: 1,
+    borderColor: "#2B3931",
+    paddingTop: 22,
+    gap: 10,
+  },
+  siriHeading: {
+    color: lime,
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 2,
+  },
+  siriPhrase: {
+    color: cream,
+    fontSize: 20,
+    lineHeight: 28,
+  },
+  siriDescription: {
+    color: muted,
+    fontSize: 13,
+    lineHeight: 20,
+  },
+  receipt: {
+    color: lime,
+    fontSize: 12,
+    minHeight: 16,
+  },
+  error: {
+    color: "#FFB3A4",
+  },
+  footer: {
+    color: "#66776D",
+    fontSize: 11,
+    textAlign: "center",
+  },
+});

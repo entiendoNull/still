@@ -7,6 +7,7 @@ import {
   Skia,
 } from "@shopify/react-native-skia";
 import { useEffect } from "react";
+import { StyleSheet } from "react-native";
 import {
   cancelAnimation,
   Easing,
@@ -74,13 +75,7 @@ export function FocusOrbit({ size, running, progress }: Props) {
 
   return (
     <Canvas
-      style={{
-        position: "absolute",
-        top: -glowPadding,
-        left: -glowPadding,
-        width: canvasSize,
-        height: canvasSize,
-      }}
+      style={[styles.canvas, { width: canvasSize, height: canvasSize }]}
       pointerEvents="none"
     >
       <Circle cx={center} cy={center} r={radius - 3} color="#15251F" />
@@ -184,3 +179,11 @@ export function FocusOrbit({ size, running, progress }: Props) {
     </Canvas>
   );
 }
+
+const styles = StyleSheet.create({
+  canvas: {
+    position: "absolute",
+    top: -glowPadding,
+    left: -glowPadding,
+  },
+});

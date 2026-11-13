@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { StyleSheet } from "react-native";
 import { setToolsButtonVisible } from "expo-dev-client";
 import { Stack, DarkTheme, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -15,9 +16,9 @@ export default function Layout() {
       <StatusBar style="light" />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: "#101A18" },
+          headerStyle: styles.background,
           headerTintColor: "#F1F4E8",
-          contentStyle: { backgroundColor: "#101A18" },
+          contentStyle: styles.background,
           headerShadowVisible: false,
         }}
       >
@@ -26,3 +27,9 @@ export default function Layout() {
     </ThemeProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  background: {
+    backgroundColor: "#101A18",
+  },
+});
